@@ -1,0 +1,86 @@
+{% extends 'truthlist/base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+<form class="container my-5">
+    <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+    
+        <h2>
+          <a class="btn btn-success" href="{%url 'download_certificate'%}" style=" font-size: 15px;color: rgb(252, 251, 251); ">
+           Submit
+          </a>
+    
+         
+        </h2>
+      
+
+    </a>
+    <table class="table mt-3">
+        <thead style="position: sticky; top: 60px; z-index: 1;  background-color: #ffffff;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal; border-radius: 15px;     padding: 10px;box-shadow: 6px 4px 8px;text-align: center; ">
+          <tr style="  background-color:#081C8D;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal ;color:#FFFFFF">
+            <th scope="col">#</th>
+            <th scope="col">Belief</th>
+            <th scope="col">Your Belief</th>
+            <th scope="col">Add to Certificate</th>
+            <th scope="col">General public</th>
+            <th scope="col">% Of public Belief</th>
+            <th scope="col">Total vote</th>
+            <th scope="col">Total agree</th>
+            <th scope="col">Total disagree</th>
+            <th scope="col">Total no comment</th>
+          </tr>
+        </thead>
+        <tbody>
+
+            {% for data in questions %}
+            <tr style="  background-color: #ffffff;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal;">
+                <th scope="row" style="border-radius: 3px;padding: 1px 5px;display: flex;justify-content: space-between; margin-bottom: 15px;text-align : center;word-wrap: normal ;">{{ forloop.counter }}</th>
+                <td>{{ data.question }}</td>
+                <td>
+                    {% if data.answer == 'agree' %} 
+                        Agree 
+                    {% elif data.answer == 'disagree' %}
+                        Disagree
+                    {% else %}
+                        No Comment
+                    {% endif %}
+                </td>
+                <td>
+                <select class="form-select" aria-label="Default select example" onchange="add_to_certtificate(this.value, {{ data.id }})"> <!--This is a form drop down-->
+                        <option {% if data.add_to_certificate%} selected {% endif %} value="true">Yes</option>
+                        <option {% if not data.add_to_certificate%} selected {% endif %} value="false">No</option>
+                    </select>
+                <td>
+                    {{ data.general_public.0 }}
+                </td>
+                <td>
+                    {{ data.general_public.1 }}%
+                </td>
+                <td>
+                    {{ data.general_public.2 }}
+                </td>
+                <td>
+                    {{ data.general_public.3 }}
+                </td>
+                <td>
+                    {{ data.general_public.4 }}
+                </td>
+                <td>
+                    {{ data.general_public.5 }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+<br><br><br><br><br>
+
+<script>
+    function add_to_certtificate(value, id){
+        window.location.href = "/add_to_certificate/"+id+"/"+value;
+    }
+</script>
+
+{% endblock %}

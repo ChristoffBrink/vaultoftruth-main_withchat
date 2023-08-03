@@ -1,0 +1,48 @@
+/* @font-face {
+    
+    font-family: 'Russo One', sans-serif;
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Tilt+Warp&display=swap" rel="stylesheet">
+  } */
+
+
+    @font-face {
+        font-family: 'Russo One', sans-serif;
+        src: url('https://fonts.googleapis.com/css2?family=Russo+One&family=Tilt+Warp&display=swap');
+    }
+
+  h1 {
+    font-family: 'Russo One', sans-serif;
+  
+  }
+  
+  
+  .table_header {
+    font-family: 'Russo One', sans-serif;
+  
+  }
+  tr,th,thead,td,p,h1,nav,a,div {
+    font-family: 'Russo One', sans-serif;
+   
+  }
+  
+  
+
+  @media (min-width: 768px) {
+    .title-h1{
+      line-height: 100%;
+    }
+    .title-name{
+      font-size: 30px;
+    }
+  }
+  @media (max-width: 768px) {
+    .title-h1{
+      line-height: 40%;
+    }
+    .title-name{
+      font-size: 14px;
+    }
+
+  }

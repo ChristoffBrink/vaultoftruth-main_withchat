@@ -1,0 +1,65 @@
+
+
+<nav style="position: sticky; top: 0; z-index: 10;"class="mt-0 pt-2 pb-2 navbar-light bg-light" >
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"
+        >&times;</a
+    >
+    {% if user.is_authenticated %}
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'profile' %}">Profile</a>
+      <a href="{% url 'assessment' %}">Assessment</a>
+      <a href="{% url 'public_believes' %}">Public Beliefs</a>
+      <a href="{% url 'category' %}">Category</a>
+      <a href="{% url 'add_new_question' %}">Add New Belief</a>
+      <a href="{% url 'pending_questions' %}">Pending Beliefs</a>
+      <a href="{% url 'download_certificate' %}">Download Certificate</a>
+      <a href="{% url 'about' %}">About</a>
+      <a href="{% url 'contact' %}">Contact</a>
+      <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+      <a href="{% url 'login' %}">Login</a>
+      <a href="{% url 'register' %}">Register</a>
+      <a href="{% url 'about' %}">About</a>
+      <a href="{% url 'contact' %}">Contact</a>
+    {% endif %}
+    
+    
+    {% if user.is_superuser %}
+      <a href="{% url 'upload' %}">Upload Excel</a>
+    {% endif %}
+    
+</div>
+<!-- Use any element to open the sidenav -->
+<div style="display: flex; justify-content: space-between; align-items: center;" class="my-2">
+  <div class="ml-1" onclick="openNav()" style="cursor: pointer;">
+    <svg viewBox="0 0 100 80" width="40" height="20">
+      <rect width="80" height="10"></rect>
+      <rect y="30" width="80" height="10"></rect>
+      <rect y="60" width="80" height="10"></rect>
+    </svg>
+  </div>
+  <div class="mx-2" >
+    <h2 class="title-h1">
+      <a href="{%url 'home'%}" class="title-name" style="color: black;">
+        FACILITATING THE SEARCH FOR TRUTH
+      </a>
+    </h2>
+  </div>
+  <div>
+    <a href="{% url 'assessment' %}" >
+      <button class="btn btn-primary float-right  mr-1"  >
+          Assessment
+      </button>
+    </a>
+  </div>
+</div>
+      
+</nav>
+  {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-warning text-center mt-1">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}

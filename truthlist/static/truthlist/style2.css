@@ -1,0 +1,36 @@
+
+.label-input-container{
+    color: gray;
+    margin-bottom: 8px;
+}
+
+.label-input-container .input{
+    border: 1px solid gray;
+    border-radius: 2px;
+    padding: 5px;
+}
+
+/* mobile screen */
+@media screen and (max-width: 600px) {
+    .label-input-container {
+        display: block;
+    }
+    .label-input-container .input{
+        width: 100%;
+    }
+
+}
+
+/* desktop screen */
+@media screen and (min-width: 600px) {
+    .label-input-container {
+        display: flex;
+        align-items: center;
+    }
+    .label-input-container .label{
+        width: 30%;
+    }
+    .label-input-container .input{
+        width: 70%;
+    }
+}

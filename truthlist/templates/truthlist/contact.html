@@ -1,0 +1,47 @@
+{% extends 'truthlist/base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+<div class="container mt-5">
+    <div style="font-family: serif;">
+        <h2 style="font-weight: bolder;" class="">Get In Touch</h2>
+        <p style="font-style: italic;">We appreciate your interest. Please use the form below to contact us. We look forward to hearing from you.</p>
+    </div>
+    <div style="max-width: 800px;">
+        <div class="label-input-container">
+            <div class="label">Full Name</div>
+            <input id="fullname" class="input" type="text" name="firstname">
+        </div>
+        <div class="label-input-container">
+            <div class="label">Subject *</div>
+            <input id="subject" class="input" type="text" name="lastname">
+        </div>
+        <div class="label-input-container">
+            <div class="label">Email *</div>
+            <input id="email" class="input" type="text" name="email">
+        </div>
+        <div class="label-input-container">
+            <div class="label">Question/Comment *</div>
+            <textarea id="comment" class="input" name="question"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end;">
+            <button onclick="sendMail()" style="border-radius: 50px; border: none; padding: 4px 24px; background-color: #00b7b2; color: white;">Submit</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function sendMail() {
+        const mailto = "hello@example.com";
+        const subject = document.getElementById("subject").value;
+        const fullname = document.getElementById("fullname").value;
+        const email = document.getElementById("email").value;
+        const comment = document.getElementById("comment").value;
+        const body = "Full Name: " + fullname + "\nEmail: " + email + "\nQuestion/Comment: " + comment;
+        window.open("mailto:" + mailto + "?subject=" + subject + "&body=" + body);
+    }
+</script>
+
+{% endblock %}

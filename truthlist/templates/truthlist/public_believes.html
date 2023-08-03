@@ -1,0 +1,102 @@
+{% extends 'truthlist/base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+<form class="container" >
+    <h2 class="responsive-table" > </h2>
+    <table class="table-header" >
+        <thead class="table-header" style="position: sticky; top: 60px; z-index: 1;  background-color: #081C8D;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);word-wrap: normal; border-radius: 15px;box-shadow: 6px 4px 8px;text-align: center; " >
+          <tr style="  background-color:#081C8D;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal ;color:#FFFFFF">
+            <th scope="col" style="padding-right: 10px;padding-left: 10px;" >#</th>
+            <th scope="col"style="padding-right: 10px;padding-left: 10px;">TRUTH/LIE BASED ON PUBLIC VOTE</th>
+            <th scope="col" style="padding-right: 10px;padding-left: 10px;">BELIEF</th>
+            <th scope="col"style="padding-right: 10px;padding-left: 10px;">WHY I BELIEVE</th>
+            <th scope="col"style="padding-right: 10px;padding-left: 10px;">DEBATE</th>
+            
+            <th scope="col"style="padding-right: 10px;padding-left: 10px;">GENERAL PUBLIC</th>
+            <th scope="col"style="padding-right: 10px;padding-left: 10px;">% OF PUBLIC BELIEVE</th>
+            <th scope="col"style="padding-right: 10px;padding-left: 10px;">TOTAL VOTE</th>
+            <th scope="col"style="padding-right: 10px;padding-left: 10px;">TOTAL AGREE</th>
+            <th scope="col"style="padding-right: 10px;padding-left: 10px;">TOTAL DISAGREE</th>
+            <th scope="col"style="padding-right: 10px;padding-left: 10px;">TOTAL NO COMMENT</th>
+          </tr>
+        </thead>
+        <tbody >
+
+            {% for data in user_answer %}
+            <tr style="  background-color: #ffffff;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal">
+                <th  scope="row" style="border-radius: 3px;padding: 5px 15px;display: flex;justify-content: space-between; margin-bottom: 15px;text-align : center;word-wrap: normal ;">{{ forloop.counter }}</th>
+                
+                {% if data.general_public.0 == 'Agree' and data.general_public.1 >= 80 %}
+                <td  style="background-color: rgb(81, 250, 30);   border-radius: 30px;     padding: 10px;box-shadow: 6px 4px 8px;text-align: center;font-weight: bold;font-size: 15px;padding-left: 10px;padding-right: 10px">
+                    TRUTH
+                </td>
+            {% elif data.general_public.0 == 'Disagree' and data.general_public.1 >= 80 %}
+                <td style="background-color: red;;   border-radius: 30px;     padding: 0.5px;box-shadow: 6px 4px 8px;text-align: center;font-weight: bold;font-size: 15px;padding-left: 10px;padding-right: 10px">
+                    LIE
+                </td>
+            {% else %}
+                <td  style="background-color: yellow;;   border-radius: 30px;     padding: 0.5px;box-shadow: 6px 4px 8px; text-align: center;font-weight: bold;font-size: 15px;padding-left: 10px;padding-right: 10px">
+                    UNDECIDED
+                </td>
+            {% endif %}
+
+
+
+                
+                
+                
+                
+                
+                <td  style="padding-left: 10px;padding-right: 10px;font-weight: bold;width:400px">{{ data.question }}</td>
+                <td style="padding-left: 10px;padding-right: 10px;text-align: center;">
+                    <a href="{% url 'reasons' data.question.id %}">Reason</a>
+                </td>
+                <td  style="padding-left: 10px;padding-right: 10px;text-align: center;">
+                    <a href="{% url 'debate' data.question.id %}">Debate</a>
+                </td>
+                
+                <td style="padding-left: 10px;padding-right: 10px;text-align: center";>
+                    {{ data.general_public.0 }}
+                </td>
+                <td  style="padding-left: 10px;padding-right: 10px;text-align: center";>
+                    {{ data.general_public.1 }}%
+                </td>
+                <td style="padding-left: 10px;padding-right: 10px;text-align: center";>
+                    {{ data.general_public.2 }}
+                </td>
+                <td style="padding-left: 10px;padding-right: 10px;text-align: center";>
+                    {{ data.general_public.3 }}
+                </td>
+                <td style="padding-left: 10px;padding-right: 10px;text-align: center";>
+                    {{ data.general_public.4 }}
+                </td>
+                <td style="padding-left: 10px;padding-right: 10px;text-align: center";>
+                    {{ data.general_public.5 }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+<br><br><br><br><br>
+
+<script>
+    function add_to_certtificate(value, id){
+        window.location.href = "/add_to_certificate/"+id+"/"+value;
+    }
+</script>
+
+{% endblock %}

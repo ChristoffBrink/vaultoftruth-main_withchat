@@ -1,0 +1,17 @@
+{% extends 'truthlist/base.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="container my-5">
+    {% for download in downloads %}
+    <a href="{{download.href}}" class="btn btn-primary btn-lg btn-block">{{download.name}}</a>
+    
+    {% endfor %}
+</div>
+<br><br><br><br><br>
+
+<script>
+</script>
+
+{% endblock %}

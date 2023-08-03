@@ -1,0 +1,33 @@
+{% extends 'truthlist/base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+<div class="container mt-5">
+    <h2 class="">All Categories</h2>
+        <table class="table mt-3">
+            <thead style="position: sticky; top: 60px; z-index: 1; background-color: white;  background-color: #ffffff;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal; border-radius: 15px;     padding: 10px;box-shadow: 6px 4px 8px;text-align: center; "">
+            <tr style="  background-color:#081C8D;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal ;color:#FFFFFF">
+                <th scope="col">#</th>
+                <th scope="col">Category</th>
+                <th scope="col">Total Beliefs</th>
+            </tr>
+            </thead>
+            <tbody>
+
+                {% for category in categories %}
+                <tr style="  background-color: #ffffff;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal;">
+                    <th scope="row"  style="border-radius: 3px;padding: 1px 5px;display: flex;justify-content: space-between; margin-bottom: 15px;text-align : center;word-wrap: normal ;">{{ forloop.counter }}</th>
+                    <td>
+                        <a href="{% url 'category_question' category.id %}">
+                            {{ category.name }}
+                        </a>
+                    </td>
+                    <td>{{ category.total_questions }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+</div>
+{% endblock %}

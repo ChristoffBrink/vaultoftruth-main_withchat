@@ -1,0 +1,52 @@
+{% extends 'truthlist/base.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="container my-5">
+    <form action="{% url 'download_certificate' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Download</button>
+    </form>
+    <table class="table mt-3">
+        <thead class="table-header" style="position: sticky; top: 60px; z-index: 1;  background-color: #ffffff;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal; border-radius: 15px;     padding: 10px;box-shadow: 6px 4px 8px;text-align: center; ">
+          <tr style="  background-color:#081C8D;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal ;color:#FFFFFF">
+            <th scope="col">#</th>
+            <th scope="col">Belief</th>
+            <th scope="col">Your belief</th>
+            <th scope="col">General public</th>
+            <th scope="col">% Of public beliefs</th>
+          </tr>
+        </thead>
+        <tbody>
+
+            {% for data in questions %}
+            <tr style="  background-color: #ffffff;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal;">
+                <th scope="row" style="border-radius: 3px;padding: 1px 5px;display: flex;justify-content: space-between; margin-bottom: 15px;text-align : center;word-wrap: normal ;">{{ forloop.counter }}</th>
+                <td>{{ data.question }}</td>
+                <td>
+                    {% if data.answer == 'agree' %} 
+                        Agree 
+                    {% elif data.answer == 'disagree' %}
+                        Disagree
+                    {% else %}
+                        No Comment
+                    {% endif %}
+                </td>
+                <td>
+                    {{ data.general_public.0 }}
+                </td>
+                <td>
+                    {{ data.general_public.1 }}%
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<br><br><br><br><br>
+
+<script>
+</script>
+
+{% endblock %}

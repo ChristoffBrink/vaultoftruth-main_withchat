@@ -1,0 +1,556 @@
+{% extends 'truthlist/base.html' %}
+{% load static %}
+{% block content %}
+
+
+ 
+<div class="container mt-5">
+    <h3># {{question.question}}</h1>
+
+
+<!--    {% if reasons %} -->
+        <p class="mt-4">I believe this because:</p>
+
+<!--
+        <table class="table mt-3">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Assertions</th>
+                <th scope="col">File</th>
+                <th scope="col">Agree</th>
+                <th scope="col">Disagree</th>
+                <th scope="col">No Comment</th>
+            </tr>
+            </thead>
+            <tbody>
+
+                {% for data in reasons %}
+                <form method="post" action="{% url 'reasons_opinion' data.id %}">
+                    {% csrf_token %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ data.reason }}</td>
+                        <td>
+                            {% if data.file %}
+                                <a href="{{ data.file.url }}" target="_blank">File</a>
+                            {% else %}
+                                No file
+                            {% endif %}
+                        </td>
+                        <td>
+                            <input class="radio-btn" type="radio" name="{{ data.id }}" value="agree" onclick="this.form.submit()" {% if request.user in data.agreed_users %} checked {% endif %}>
+                        </td>
+                        <td>
+                            <input class="radio-btn" type="radio" name="{{ data.id }}" value="disagree" onclick="this.form.submit()" {% if request.user in data.disagreed_users %} checked {% endif %}>
+                        </td>
+                        <td>
+                            <input class="radio-btn" type="radio" name="{{ data.id }}" value="no_comment" onclick="this.form.submit()" {% if request.user in data.no_comment_users %} checked {% endif %}>
+                        </td>
+                    </tr>
+                </form>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="mt-3 ml-5">No assertions found.</p>
+    {% endif %}
+   
+    <form class="card p-3" method="post" enctype="multipart/form-data" action="{% url 'reasons' question.id %}">
+        {% csrf_token %}
+        <p>If you believe, share your reasons.</p>
+        <div class="form-group">
+            <label for="reason">Reason</label>
+            <textarea name="reason" class="form-control" id="reason" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="file">File</label>
+            <input name="file" type="file" class="form-control-file" id="file">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+-->
+    <div class="mt-4 card p-3 mb-5">
+        <form id="comment-form" method="post" enctype="multipart/form-data" action="{% url 'add_comment' question.id %}">
+            {% csrf_token %}
+            <div>
+                <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Why dont you believe: {{question.question}}"></textarea>
+            </div>
+            <div class="mt-2 d-flex justify-content-between">
+                <input name="file" id="file" type="file" class="form-control-file" id="file">
+                <button id="comment-submit" type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+        
+          
+        <p>Do you want to update your believe?
+            <input class="radio-btn" type="radio" name="update" value="yes"> Yes
+
+            <input class="radio-btn" type="radio" checked name="update" value="no"> No
+        </p>
+        <form class="d-none card p-3" id="update-reason" method="post" action="{% url 'update_believes' question.id %}">
+            {% csrf_token %}
+            <p>If you want to update your believe, why?<br><br>
+            <input required class="radio-btn" type="radio" name="update_believe" value="1"> 
+            <label for="agree">1. The evidence is compelling</label><br>
+            <input required class="radio-btn" type="radio" name="update_believe" value="2">
+            <label for="disagree">2. Based on feeling</label><br>
+            <input required class="radio-btn" type="radio" name="update_believe" value="3">
+            <label for="no_comment">3. Societal pressuret</label><br></p>
+            <button id="update-submit" type="submit" class="btn btn-sm btn-primary">Submit</button>
+        </form>
+
+    
+        <div id="comment-section">
+            {% if comments %}
+                <p class="mt-3">Comments</p>
+            {% else %}
+                <p class="mt-3 text-muted">No comments found.</p>
+            {% endif %}
+            <div id="comment-list">
+                {% for comment in comments %}
+                    <div id="comment-{{comment.id}}" class="card p-3 mt-2 comment">
+                        <div class="d-flex justify-content-between">
+                            <h5>
+                                <i class="fas fa-user"></i>
+                                {{comment.user.username}}
+                                
+                            </h5>
+                            {% if comment.user == request.user %}
+                                <a href="{% url 'delete_comment' comment.id %}" onclick="return confirm('Are you sure you want to delete this comment?')" class="text-danger"
+                                ><i class="far fa-trash-alt"></i></a>
+                            {% endif %}
+                        </div>
+                        <div class="ml-4">
+                            <p class="mb-0">{{ comment.comment }}</p>
+                            <span style="font-size: 12px;">
+                                {% if request.user in comment.liked_users.all %}
+                                    <span id="remove-like-comment-{{comment.id}}" onclick="removeLikeComment({{comment.id}})" style="cursor: pointer;" class="text-success">Agree</span>
+                                    <span id="like-comment-{{comment.id}}" onclick="likeComment({{comment.id}})" style="cursor: pointer;" class="d-none">Agree</span>
+                                {% else %}
+                                    <span id="like-comment-{{comment.id}}" onclick="likeComment({{comment.id}})" style="cursor: pointer;" class="">Agree</span>
+                                    <span id="remove-like-comment-{{comment.id}}" onclick="removeLikeComment({{comment.id}})" style="cursor: pointer;" class="d-none text-success">Agree</span>
+                                {% endif %}
+                                <span id="count-like-comment-{{comment.id}}" class="mr-2">{{ comment.liked_users.count }}</span>
+                                {% if request.user in comment.disliked_users.all %}
+                                    <span id="remove-dislike-comment-{{comment.id}}" onclick="removeDislikeComment({{comment.id}})" style="cursor: pointer;" class=" text-danger">Disagree</span>
+                                    <span id="dislike-comment-{{comment.id}}" onclick="dislikeComment({{comment.id}})" style="cursor: pointer;" class="d-none">Disagree</span>
+                                {% else %}
+                                    <span id="dislike-comment-{{comment.id}}" onclick="dislikeComment({{comment.id}})" style="cursor: pointer;"  class="">Disagree</span>
+                                    <span id="remove-dislike-comment-{{comment.id}}" onclick="removeDislikeComment({{comment.id}})" style="cursor: pointer;" class="d-none text-danger">Disagree</span>
+                                {% endif %}
+                                <span id="count-dislike-comment-{{comment.id}}" class="mr-2">{{ comment.disliked_users.count }}</span>
+                            </span>
+                            {% if comment.file %}
+                                <a style="font-size: 12px;" href="{{ comment.file.url }}" class="mr-2" target="_blank">File</a>
+                            {% endif %}
+                            
+                            {% if comment.replies %}
+                                <span id="show-this-thread-{{comment.id}}" onclick="showThisThread({{comment.id}})" style="font-size: 12px; cursor: pointer;" class="text-primary mr-2" >. . . Show this thread</span>
+                            {% endif %}
+                            <span id="first-reply-btn" onclick="showReplyBox({{comment.id}})" style="font-size: 12px; cursor: pointer;" class="text-primary" >Reply</span>
+
+                            <div id="reply-list-{{comment.id}}" class="d-none">
+                                {% for reply in comment.replies %}
+                                    <div id="reply-{{reply.id}}" class="border-top pt-2 mb-2 reply">
+                                        <div class="d-flex justify-content-between">
+                                            <h6>
+                                                <i class="fas fa-user"></i>
+                                                {{reply.user.username}}
+                                                
+                                            </h6>
+                                            {% if reply.user == request.user %}
+                                                <a href="{% url 'delete_reply' reply.id %}" onclick="return confirm('Are you sure you want to delete this reply?')" class="text-danger"
+                                                ><i class="far fa-trash-alt"></i></a>
+                                            {% endif %}
+                                        </div>
+                                        <div class="ml-4">
+                                            <p class="mb-0 mt-0">{{ reply.reply }}</p>
+                                            {% if request.user in reply.liked_users.all %}
+                                                <span id="remove-like-reply-{{reply.id}}" onclick="removeLikeReply({{reply.id}})" style="cursor: pointer;" class="text-dark">Agree</span>
+                                                <span id="like-reply-{{reply.id}}" onclick="likeReply({{reply.id}})" style="cursor: pointer;" class="d-none">Agree</span>
+                                            {% else %}
+                                                <span id="like-reply-{{reply.id}}" onclick="likeReply({{reply.id}})" style="cursor: pointer;" class="text-dark">Agree</span>
+                                                <span id="remove-like-reply-{{reply.id}}" onclick="removeLikeReply({{reply.id}})" style="cursor: pointer;" class="d-none">Agree</span>
+                                            {% endif %}
+                                            <span id="count-like-reply-{{reply.id}}" class="mr-2">{{ reply.liked_users.count }}</span>
+                                            {% if request.user in reply.disliked_users.all %}
+                                                <span id="remove-dislike-reply-{{reply.id}}" onclick="removeDislikeReply({{reply.id}})" style="cursor: pointer;">Disagree</span>
+                                                <span id="dislike-reply-{{reply.id}}" onclick="dislikeReply({{reply.id}})" style="cursor: pointer;" class="d-none">Disagree</span>
+                                            {% else %}
+                                                <span id="dislike-reply-{{reply.id}}" onclick="dislikeReply({{reply.id}})" style="cursor: pointer;">Disagree</span>
+                                                <span id="remove-dislike-reply-{{reply.id}}" onclick="removeDislikeReply({{reply.id}})" style="cursor: pointer;" class="d-none">Disagree</span>
+                                            {% endif %}
+                                            <span id="count-dislike-reply-{{reply.id}}" class="mr-2">{{ reply.disliked_users.count }}</span>
+                
+                                            {% if reply.file %}
+                                                <a style="font-size: 12px;" href="{{ reply.file.url }}" class="mr-2" target="_blank">File</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div id="reply-box-{{comment.id}}" class="d-none">
+                                <div class="d-flex align-items-start">
+                                    <div style="width: 100%;">
+                                        <textarea id="reply-input-{{comment.id}}" class="form-control reply-textarea" rows="1" placeholder="Reply"></textarea>
+                                        <input id="reply-file-{{comment.id}}" type="file" class="form-control-file mt-1" id="file">
+                                    </div>
+                                    
+                                    <button onclick="addReply({{comment.id}})" class="btn btn-primary ml-2" style="width: 80px;">Submit</button>
+                                </div>
+                            </div>
+
+                            <span id="second-reply-btn" onclick="showReplyBox({{comment.id}})" style="font-size: 12px; cursor: pointer;" class="text-primary mr-2 d-none" >Reply</span>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="demo-reply" class="border-top pt-2 d-none reply">
+    <div class="d-flex justify-content-between">
+        <h6>
+            <i class="fas fa-user"></i>
+            <span id="reply-user"></span>
+            
+        </h6>
+        <a id="delete-btn" href="" onclick="return confirm('Are you sure you want to delete this reply?')" class="text-danger"
+        ><i class="far fa-trash-alt"></i></a>
+    </div>
+    <div class="ml-4">
+        <p id="reply" class="mb-0"></p>
+        <span id="like-reply" onclick="" style="cursor: pointer;">Agree</span>
+        <span id="remove-like-reply" onclick="" style="cursor: pointer;" class="d-none">Agree</span>
+        <span id="count-like-reply" class="mr-2">0</span>
+        <span id="dislike-reply" onclick="" style="cursor: pointer;">Disagree</span>
+        <span id="remove-dislike-reply" onclick="" style="cursor: pointer;" class="d-none">Disagree</span>
+        <span id="count-dislike-reply" class="mr-2">0</span>
+
+        <a id="file" style="font-size: 12px;" href="" class="mr-2 d-none" target="_blank">File</a>
+    </div>
+</div>
+
+<script>
+    const updateReason = document.getElementById('update-reason');
+    const updateRadio = document.getElementsByName('update');
+    updateRadio.forEach((radio) => {
+        radio.addEventListener('click', () => {
+            if (radio.value === 'yes') {
+                updateReason.classList.remove('d-none');
+            } else {
+                updateReason.classList.add('d-none');
+            }
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function showReplyBox(id) {
+        const replyBox = document.getElementById(`reply-box-${id}`);
+        replyBox.classList.toggle('d-none');
+    }
+
+    function showThisThread(id) {
+        const replyList = document.getElementById(`reply-list-${id}`);
+        replyList.classList.toggle('d-none');
+        const firstReplyBtn = document.getElementById('first-reply-btn');
+        firstReplyBtn.classList.toggle('d-none');
+        const secondReplyBtn = document.getElementById('second-reply-btn');
+        secondReplyBtn.classList.toggle('d-none');
+        
+    }
+
+    function addReply(id) {
+        const replyInput = document.getElementById(`reply-input-${id}`);
+        const replyFile = document.getElementById(`reply-file-${id}`);
+        const replyList = document.getElementById(`reply-list-${id}`);
+        const replyBox = document.getElementById(`reply-box-${id}`);
+        const reply = replyInput.value;
+        const file = replyFile.files[0];
+        const formData = new FormData();
+        formData.append('reply', reply);
+        formData.append('file', file);
+        formData.append('csrfmiddlewaretoken', csrftoken);
+        fetch(`/add-reply/${id}/`, {
+            method: 'POST',
+            body: formData,
+        })
+        .then((response) => response.json())
+        .then((data)=>{
+            insertReply(data, id);
+            replyList.classList.remove('d-none');
+            replyInput.value = '';
+            replyFile.value = '';
+            replyBox.classList.add('d-none');
+        })
+    }
+
+    function insertReply(data, id){
+        const replyList = document.getElementById(`reply-list-${id}`);
+
+        const demoReply = document.getElementById('demo-reply');
+        const clone = demoReply.cloneNode(true);
+        clone.id = 'reply-' + data.id;
+        clone.classList.remove('d-none');
+        const replyUser = clone.querySelector('#reply-user');
+        const reply = clone.querySelector('#reply');
+        const file = clone.querySelector('#file');
+        const deleteBtn = clone.querySelector('#delete-btn');
+        const likeReply = clone.querySelector('#like-reply');
+        const removeLikeReply = clone.querySelector('#remove-like-reply');
+        const countLikeReply = clone.querySelector('#count-like-reply');
+        const dislikeReply = clone.querySelector('#dislike-reply');
+        const removeDislikeReply = clone.querySelector('#remove-dislike-reply');
+        const countDislikeReply = clone.querySelector('#count-dislike-reply');
+        replyUser.innerHTML = data.user;
+        reply.innerHTML = data.reply;
+        if (data.file) {
+            file.classList.remove('d-none');
+            file.href = data.file;
+        }
+        deleteBtn.href = '/delete-reply/' + data.id + '/'
+        likeReply.id = 'like-reply-' + data.id;
+        removeLikeReply.id = 'remove-like-reply-' + data.id;
+        countLikeReply.id = 'count-like-reply-' + data.id;
+        dislikeReply.id = 'dislike-reply-' + data.id;
+        removeDislikeReply.id = 'remove-dislike-reply-' + data.id;
+        countDislikeReply.id = 'count-dislike-reply-' + data.id;
+
+        likeReply.setAttribute('onclick', `likeReply(${data.id})`);
+        removeLikeReply.setAttribute('onclick', `removeLikeReply(${data.id})`);
+        dislikeReply.setAttribute('onclick', `dislikeReply(${data.id})`);
+        removeDislikeReply.setAttribute('onclick', `removeDislikeReply(${data.id})`);
+        
+
+        replyList.appendChild(clone);
+    }
+
+
+    function checkForReply(id){
+        const replyList = document.getElementById(`reply-list-${id}`);
+        const reply = replyList.querySelectorAll('.reply');
+        const lastReply = reply[reply.length - 1];
+        const replyId = lastReply.id.split('-')[1];
+        console.log(replyId);
+    }
+
+
+    setInterval(() => {
+        const comment = document.querySelectorAll('.comment');
+        comment.forEach((c) => {
+            const id = c.id.split('-')[1];
+            const replyList = document.getElementById(`reply-list-${id}`);
+            const reply = replyList.querySelectorAll('.reply');
+            const lastReply = reply[reply.length - 1];
+            if (lastReply) {
+                const replyId = lastReply.id.split('-')[1];
+                fetch(`/check-for-reply/${id}/${replyId}/`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.reply) {
+                        for (let i = 0; i < data.reply.length; i++) {
+                            insertReply(data.reply[i], id);
+                        }
+                    }
+                })
+            }
+        })
+    }, 5000);
+
+
+    function likeComment(id){
+        fetch(`/like-comment/${id}/`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.status === 'success'){
+                const remove_like_comment = document.getElementById(`remove-like-comment-${id}`);
+                const like_comment = document.getElementById(`like-comment-${id}`);
+                const like_count = document.getElementById(`count-like-comment-${id}`);
+                const remove_dislike_comment = document.getElementById(`remove-dislike-comment-${id}`);
+                const dislike_comment = document.getElementById(`dislike-comment-${id}`);
+                const dislike_count = document.getElementById(`count-dislike-comment-${id}`);
+
+                remove_like_comment.classList.remove('d-none');
+                like_comment.classList.add('d-none');
+                like_count.innerText = data.likes;
+                remove_dislike_comment.classList.add('d-none');
+                dislike_comment.classList.remove('d-none');
+                dislike_count.innerText = data.dislikes;
+            }
+        })
+    }
+
+    function removeLikeComment(id){
+        fetch(`/remove-like-comment/${id}/`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.status === 'success'){
+                const remove_like_comment = document.getElementById(`remove-like-comment-${id}`);
+                const like_comment = document.getElementById(`like-comment-${id}`);
+                const like_count = document.getElementById(`count-like-comment-${id}`);
+
+                remove_like_comment.classList.add('d-none');
+                like_comment.classList.remove('d-none');
+                like_count.innerText = data.likes;
+            }
+        })
+    }
+
+    function dislikeComment(id){
+        fetch(`/dislike-comment/${id}/`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.status === 'success'){
+                const remove_dislike_comment = document.getElementById(`remove-dislike-comment-${id}`);
+                const dislike_comment = document.getElementById(`dislike-comment-${id}`);
+                const dislike_count = document.getElementById(`count-dislike-comment-${id}`);
+                const remove_like_comment = document.getElementById(`remove-like-comment-${id}`);
+                const like_comment = document.getElementById(`like-comment-${id}`);
+                const like_count = document.getElementById(`count-like-comment-${id}`);
+
+                remove_dislike_comment.classList.remove('d-none');
+                dislike_comment.classList.add('d-none');
+                dislike_count.innerText = data.dislikes;
+                remove_like_comment.classList.add('d-none');
+                like_comment.classList.remove('d-none');
+                like_count.innerText = data.likes;
+            }
+        })
+    }
+
+    function removeDislikeComment(id){
+        fetch(`/remove-dislike-comment/${id}/`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.status === 'success'){
+                const remove_dislike_comment = document.getElementById(`remove-dislike-comment-${id}`);
+                const dislike_comment = document.getElementById(`dislike-comment-${id}`);
+                const dislike_count = document.getElementById(`count-dislike-comment-${id}`);
+
+                remove_dislike_comment.classList.add('d-none');
+                dislike_comment.classList.remove('d-none');
+                dislike_count.innerText = data.dislikes;
+            }
+        })
+    }
+
+    function likeReply(id){
+        fetch(`/like-reply/${id}/`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.status === 'success'){
+                const remove_like_reply = document.getElementById(`remove-like-reply-${id}`);
+                const like_reply = document.getElementById(`like-reply-${id}`);
+                const like_count = document.getElementById(`count-like-reply-${id}`);
+                const remove_dislike_reply = document.getElementById(`remove-dislike-reply-${id}`);
+                const dislike_reply = document.getElementById(`dislike-reply-${id}`);
+                const dislike_count = document.getElementById(`count-dislike-reply-${id}`);
+
+                remove_like_reply.classList.remove('d-none');
+                like_reply.classList.add('d-none');
+                like_count.innerText = data.likes;
+                remove_dislike_reply.classList.add('d-none');
+                dislike_reply.classList.remove('d-none');
+                dislike_count.innerText = data.dislikes;
+            }
+        })
+    }
+
+    function removeLikeReply(id){
+        fetch(`/remove-like-reply/${id}/`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.status === 'success'){
+                const remove_like_reply = document.getElementById(`remove-like-reply-${id}`);
+                const like_reply = document.getElementById(`like-reply-${id}`);
+                const like_count = document.getElementById(`count-like-reply-${id}`);
+
+                remove_like_reply.classList.add('d-none');
+                like_reply.classList.remove('d-none');
+                like_count.innerText = data.likes;
+            }
+        })
+    }
+
+    function dislikeReply(id){
+        fetch(`/dislike-reply/${id}/`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.status === 'success'){
+                const remove_dislike_reply = document.getElementById(`remove-dislike-reply-${id}`);
+                const dislike_reply = document.getElementById(`dislike-reply-${id}`);
+                const dislike_count = document.getElementById(`count-dislike-reply-${id}`);
+                const remove_like_reply = document.getElementById(`remove-like-reply-${id}`);
+                const like_reply = document.getElementById(`like-reply-${id}`);
+                const like_count = document.getElementById(`count-like-reply-${id}`);
+
+                remove_dislike_reply.classList.remove('d-none');
+                dislike_reply.classList.add('d-none');
+                dislike_count.innerText = data.dislikes;
+                remove_like_reply.classList.add('d-none');
+                like_reply.classList.remove('d-none');
+                like_count.innerText = data.likes;
+            }
+        })
+    }
+
+    function removeDislikeReply(id){
+        fetch(`/remove-dislike-reply/${id}/`)
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.status === 'success'){
+                const remove_dislike_reply = document.getElementById(`remove-dislike-reply-${id}`);
+                const dislike_reply = document.getElementById(`dislike-reply-${id}`);
+                const dislike_count = document.getElementById(`count-dislike-reply-${id}`);
+
+                remove_dislike_reply.classList.add('d-none');
+                dislike_reply.classList.remove('d-none');
+                dislike_count.innerText = data.dislikes;
+            }
+        })
+    }
+
+    
+
+    // limit characters in comment like twitter
+    const comment = document.getElementById('comment');
+    comment.addEventListener('keyup', function(){
+        const commentLength = comment.value.length;
+        if (commentLength > 120){
+            alert('You have exceeded the limit of characters');
+            comment.value = comment.value.substring(0, 120);
+        }
+    })
+
+    const reply_textarea = document.getElementsByClassName('reply-textarea');
+    for (let i = 0; i < reply_textarea.length; i++){
+        reply_textarea[i].addEventListener('keyup', function(){
+            const reply_textarea_length = reply_textarea[i].value.length;
+            if (reply_textarea_length > 120){
+                alert('You have exceeded the limit of characters');
+                reply_textarea[i].value = reply_textarea[i].value.substring(0, 120);
+            }
+        })
+    }
+
+</script>
+{% endblock %}
