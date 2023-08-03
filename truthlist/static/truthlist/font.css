@@ -44,5 +44,10 @@
     .title-name{
       font-size: 14px;
     }
-
+    .m-fs-12{
+      font-size: 12px;
+    }
+    .m-fs-24{
+      font-size: 24px;
+    }
   }

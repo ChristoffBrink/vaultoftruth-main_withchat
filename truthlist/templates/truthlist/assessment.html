@@ -4,11 +4,11 @@
 
 
 
-<form class="container my-5" style="overflow-x: scroll;" action="{% url 'assessment' %}" method="POST">
+<form class="container my-5" action="{% url 'assessment' %}" method="POST">
     {% csrf_token %}
-    <h2 class="">Assessment</h2>
-    <table class="table mt-3">   <!-- This contsructs the table */-->
-        <thead style="position: sticky; top: 60px; z-index: 1; background-color: white;  background-color: #ffffff;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal; border-radius: 15px;     padding: 10px;box-shadow: 6px 4px 8px;text-align: center; " >
+    <h2 class="m-fs-24">Assessment</h2>
+    <table class="table mt-3 m-fs-12">   <!-- This contsructs the table */-->
+        <thead style="position: sticky; top: 75px; z-index: 1; background-color: white;  background-color: #ffffff;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal; border-radius: 15px;     padding: 10px;box-shadow: 6px 4px 8px;text-align: center; " >
           <tr style="  background-color:#081C8D;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal ;color:#FFFFFF">
             <th scope="col">#</th>        <!-- These are the column headings */-->
             <th scope="col">Belief</th>
@@ -21,15 +21,15 @@
 
             {% for data in questions %}  <!-- tr constructs the rows */-->
             <tr style="  background-color: #ffffff;box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);;text-align : center;word-wrap: normal;">
-                <th scope="row" style="border-radius: 3px;padding: 1px 5px;display: flex;justify-content: space-between; margin-bottom: 15px;text-align : center;word-wrap: normal ;">{{ forloop.counter }}</th>
-                <td>{{ data.question }}</td>
-                <td> <!-- actual element in the row */-->
+                <th scope="row" style="width: 5%; border-radius: 3px;padding: 1px 5px;display: flex;justify-content: space-between; margin-bottom: 15px;text-align : center;word-wrap: normal ;">{{ forloop.counter }}</th>
+                <td style="width: 65%;">{{ data.question }}</td>
+                <td style="width: 10%"> <!-- actual element in the row */-->
                     <input class="radio-btn" type="radio" name="{{ data.id }}" value="agree">
                 </td>
-                <td>
+                <td style="width: 10%">
                     <input class="radio-btn" type="radio" name="{{ data.id }}" value="disagree">
                 </td>
-                <td>
+                <td style="width: 10%">
                     <input class="radio-btn" type="radio" name="{{ data.id }}" value="no_comment">
                 </td>
             </tr>
