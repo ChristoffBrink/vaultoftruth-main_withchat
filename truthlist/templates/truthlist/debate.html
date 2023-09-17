@@ -83,20 +83,20 @@
         </form>
         
           
-        <p>Do you want to update your believe?
+        <p>Do you want to update your belief?
             <input class="radio-btn" type="radio" name="update" value="yes"> Yes
 
             <input class="radio-btn" type="radio" checked name="update" value="no"> No
         </p>
         <form class="d-none card p-3" id="update-reason" method="post" action="{% url 'update_believes' question.id %}">
             {% csrf_token %}
-            <p>If you want to update your believe, why?<br><br>
+            <p>If you want to update your belief, why?<br><br>
             <input required class="radio-btn" type="radio" name="update_believe" value="1"> 
             <label for="agree">1. The evidence is compelling</label><br>
             <input required class="radio-btn" type="radio" name="update_believe" value="2">
             <label for="disagree">2. Based on feeling</label><br>
             <input required class="radio-btn" type="radio" name="update_believe" value="3">
-            <label for="no_comment">3. Societal pressuret</label><br></p>
+            <label for="no_comment">3. Societal pressure</label><br></p>
             <button id="update-submit" type="submit" class="btn btn-sm btn-primary">Submit</button>
         </form>
 
