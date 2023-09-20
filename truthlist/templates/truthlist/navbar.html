@@ -31,7 +31,7 @@
     
 </div>
 <!-- Use any element to open the sidenav -->
-<div style="display: flex; justify-content: space-between; align-items: center;" class="my-2">
+<div style="display: flex; align-items: center" class="my-2">
   <div class="ml-1" onclick="openNav()" style="cursor: pointer;">
     <svg viewBox="0 0 100 80" width="40" height="20">
       <rect width="80" height="10"></rect>
@@ -39,16 +39,24 @@
       <rect y="60" width="80" height="10"></rect>
     </svg>
   </div>
-  <div class="mx-2" >
+  <div style="margin-right: 9%;margin-left: 24%">
     <h2 class="title-h1">
       <a href="{%url 'home'%}" class="title-name" style="color: black;">
         FACILITATING THE SEARCH FOR TRUTH
       </a>
     </h2>
   </div>
-  <div>
+  
+  <div style="margin-right: 2%">
+    <a href="{% url 'about' %}" >
+      <button class="btn btn-primary float-right   margin-right: 1rem"  >
+          About
+      </button>
+    </a>
+  </div>
+  <div style="margin-right: 1%">
     <a href="{% url 'assessment' %}" >
-      <button class="btn btn-primary float-right  mr-1"  >
+      <button class="btn btn-primary float-right   margin-right: 1rem"  >
           Assessment
       </button>
     </a>
